@@ -85,7 +85,6 @@ h1, h2 {
 
 .hero-subtitle {
     font-size: 22px;
-    max-width: 320px;
     line-height: 1.4;
 }
 
@@ -205,3 +204,4 @@ h1, h2 {
         display: none;
     }
 }
+
