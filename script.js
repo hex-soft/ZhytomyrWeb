@@ -104,13 +104,19 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
 });
 
 document.querySelectorAll(".faction-link").forEach(btn => {
-    btn.addEventListener("click", () => {
-        const target = document.getElementById(btn.dataset.target);
+    btn.addEventListener("click", e => {
+        const targetId = btn.dataset.target;
+        const target = document.getElementById(targetId);
         if (!target) return;
+
+        e.preventDefault(); 
 
         const yOffset = -80;
         const y = target.getBoundingClientRect().top + window.scrollY + yOffset;
 
-        smoothScrollTo(y, 1100);
+        window.scrollTo({
+            top: y,
+            behavior: "smooth"
+        });
     });
 });
