@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<title>Правила сервера</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    color: #e5e7eb;
+    background: linear-gradient(
+        180deg,
+        #0b1d3a 0%,
+        #0b1d3a 25%,
+        #0b3a78 45%,
+        #facc15 70%,
+        #fde047 100%
+    );
+}
+
+/* ===== HERO ===== */
+.hero {
+    height: 340px;
+    background: url("imgs/footerimg.jpg") center / cover no-repeat;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle, rgba(0,0,0,0.2), rgba(0,0,0,0.85));
+}
+
+.hero h1 {
+    position: relative;
+    font-size: 52px;
+    font-weight: 800;
+    z-index: 1;
+    text-shadow: 0 0 25px rgba(0,0,0,0.9);
+}
+
+/* ===== CONTENT ===== */
+.rules-wrapper {
+    max-width: 1100px;
+    margin: -80px auto 80px;
+    padding: 50px;
+    background: rgba(10,15,30,0.85);
+    backdrop-filter: blur(12px);
+    border-radius: 26px;
+    box-shadow: 0 40px 120px rgba(0,0,0,0.7);
+    animation: fadeUp 1s ease;
+}
+
+.section-title {
+    font-size: 30px;
+    margin: 40px 0 20px;
+    color: #93c5fd;
+}
+
+.rule-box {
+    background: rgba(255,255,255,0.04);
+    border-left: 4px solid #3b82f6;
+    padding: 22px 26px;
+    border-radius: 14px;
+    margin-bottom: 18px;
+}
+
+.rule-box ul {
+    padding-left: 20px;
+}
+
+.rule-box li {
+    margin-bottom: 10px;
+}
+
+.tag {
+    display: inline-block;
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    margin-right: 6px;
+}
+
+/* ===== BACK BUTTON ===== */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 50px;
+    padding: 14px 36px;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: white;
+    text-decoration: none;
+    border-radius: 999px;
+    font-weight: 600;
+    transition: 0.35s ease;
+    box-shadow: 0 0 30px rgba(37,99,235,0.5);
+}
+
+.back-btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 0 45px rgba(37,99,235,0.9);
+}
+
+/* ===== ANIM ===== */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- HERO -->
+<div class="hero">
+    <h1>📜 Правила RP сервера</h1>
+</div>
+
+<!-- CONTENT -->
+<div class="rules-wrapper">
+
+    <h2 class="section-title">Загальні правила</h2>
+    <div class="rule-box">
+        <ul>
+            <li><span class="tag">MG</span> Заборонено використовувати OOC-інформацію в RP</li>
+            <li><span class="tag">PG</span> Заборонено виконувати дії, неможливі в реальному житті</li>
+            <li><span class="tag">DM</span> Заборонене вбивство без RP-причини</li>
+            <li><span class="tag">NonRP</span> Поведінка не в рамках RP заборонена</li>
+            <li>Заборонені образи, провокації та токсичність</li>
+        </ul>
+    </div>
+
+    <h2 class="section-title">RP процес</h2>
+    <div class="rule-box">
+        <ul>
+            <li>Гравець зобовʼязаний відігравати роль до кінця ситуації</li>
+            <li>Заборонений вихід з RP без поважної причини</li>
+            <li>Заборонене використання багів та експлойтів</li>
+            <li>Power Abuse карається адміністрацією</li>
+        </ul>
+    </div>
+
+    <h2 class="section-title">Взаємодія з адміністрацією</h2>
+    <div class="rule-box">
+        <ul>
+            <li>Адміністрація має право втручатись у RP</li>
+            <li>Обговорення покарань — лише в приватному порядку</li>
+            <li>Неповага до адміністрації карається</li>
+        </ul>
+    </div>
+
+    <center>
+        <a href="index.html" class="back-btn">⬅ Повернутись на головну</a>
+    </center>
+
+</div>
+
+</body>
+</html>
