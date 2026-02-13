@@ -123,15 +123,17 @@ document.querySelectorAll(".faction-link").forEach(btn => {
 
 document.addEventListener('DOMContentLoaded', () => {
     const devBlocks = document.querySelectorAll('[data-rbx-id]');
-    
+    // Використовуємо публічний проксі для обходу CORS
+    const corsProxy = "https://corsproxy.io/?"; 
+
     devBlocks.forEach(block => {
         const userId = block.getAttribute('data-rbx-id');
         const imgElement = block.querySelector('.rbx-avatar');
         const nameElement = block.querySelector('.rbx-name');
 
-        if (userId) {
-            // 1. Отримуємо аватарку
-            const thumbUrl = `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`;
+        if (userId && userId !== "YOUR_ID") {
+            // 1. Завантаження аватарки (через проксі)
+            const thumbUrl = `${corsProxy}${encodeURIComponent(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`)}`;
             
             fetch(thumbUrl)
                 .then(res => res.json())
@@ -139,25 +141,24 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (data.data && data.data[0]) {
                         imgElement.src = data.data[0].imageUrl;
                     }
-                });
+                })
+                .catch(() => { imgElement.src = "imgs/logo.png"; });
 
-            // 2. Отримуємо нікнейм (Username та DisplayName)
-            // Використовуємо проксі для обходу CORS, якщо прямий запит блокується
-            const userUrl = `https://users.roblox.com/v1/users/${userId}`;
+            // 2. Завантаження нікнейму (через проксі)
+            const userUrl = `${corsProxy}${encodeURIComponent(`https://users.roblox.com/v1/users/${userId}`)}`;
             
             fetch(userUrl)
                 .then(res => res.json())
                 .then(data => {
                     if (data.displayName) {
-                        // Виведемо "Нікнейм (@Username)"
-                        nameElement.textContent = `${data.displayName}`;
-                        // Можна також додати @username дрібним шрифтом за бажанням:
-                        // nameElement.innerHTML = `${data.displayName} <br><span style="font-size:10px; opacity:0.6;">@${data.name}</span>`;
+                        nameElement.textContent = data.displayName;
+                    } else if (data.name) {
+                        nameElement.textContent = data.name;
                     }
                 })
                 .catch(err => {
-                    nameElement.textContent = "Помилка API";
-                    console.error("Помилка Roblox API:", err);
+                    nameElement.textContent = "Помилка завантаження";
+                    console.error("Roblox API Error:", err);
                 });
         }
     });
