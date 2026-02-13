@@ -123,8 +123,8 @@ document.querySelectorAll(".faction-link").forEach(btn => {
 
 document.addEventListener('DOMContentLoaded', () => {
     const devBlocks = document.querySelectorAll('[data-rbx-id]');
-    // Використовуємо публічний проксі для обходу CORS
-    const corsProxy = "https://corsproxy.io/?"; 
+    // Тепер використовуємо твій власний проксі на Netlify
+    const proxyUrl = "/api/roblox?url="; 
 
     devBlocks.forEach(block => {
         const userId = block.getAttribute('data-rbx-id');
@@ -132,34 +132,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const nameElement = block.querySelector('.rbx-name');
 
         if (userId && userId !== "YOUR_ID") {
-            // 1. Завантаження аватарки (через проксі)
-            const thumbUrl = `${corsProxy}${encodeURIComponent(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`)}`;
-            
-            fetch(thumbUrl)
+            // Завантаження аватарки
+            const rbxThumb = `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`;
+            fetch(`${proxyUrl}${encodeURIComponent(rbxThumb)}`)
                 .then(res => res.json())
                 .then(data => {
-                    if (data.data && data.data[0]) {
-                        imgElement.src = data.data[0].imageUrl;
-                    }
-                })
-                .catch(() => { imgElement.src = "imgs/logo.png"; });
+                    if (data.data && data.data[0]) imgElement.src = data.data[0].imageUrl;
+                }).catch(() => { imgElement.src = "imgs/logo.png"; });
 
-            // 2. Завантаження нікнейму (через проксі)
-            const userUrl = `${corsProxy}${encodeURIComponent(`https://users.roblox.com/v1/users/${userId}`)}`;
-            
-            fetch(userUrl)
+            // Завантаження імені
+            const rbxUser = `https://users.roblox.com/v1/users/${userId}`;
+            fetch(`${proxyUrl}${encodeURIComponent(rbxUser)}`)
                 .then(res => res.json())
                 .then(data => {
-                    if (data.displayName) {
-                        nameElement.textContent = data.displayName;
-                    } else if (data.name) {
-                        nameElement.textContent = data.name;
-                    }
-                })
-                .catch(err => {
-                    nameElement.textContent = "Помилка завантаження";
-                    console.error("Roblox API Error:", err);
-                });
+                    if (data.displayName) nameElement.textContent = data.displayName;
+                }).catch(() => { nameElement.textContent = "Помилка"; });
         }
     });
 });
