@@ -1,0 +1,3 @@
+[[edge_functions]]
+path = "/api/roblox"
+function = "roblox-proxy"
