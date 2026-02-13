@@ -120,3 +120,45 @@ document.querySelectorAll(".faction-link").forEach(btn => {
         });
     });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const devBlocks = document.querySelectorAll('[data-rbx-id]');
+    
+    devBlocks.forEach(block => {
+        const userId = block.getAttribute('data-rbx-id');
+        const imgElement = block.querySelector('.rbx-avatar');
+        const nameElement = block.querySelector('.rbx-name');
+
+        if (userId) {
+            // 1. Отримуємо аватарку
+            const thumbUrl = `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`;
+            
+            fetch(thumbUrl)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.data && data.data[0]) {
+                        imgElement.src = data.data[0].imageUrl;
+                    }
+                });
+
+            // 2. Отримуємо нікнейм (Username та DisplayName)
+            // Використовуємо проксі для обходу CORS, якщо прямий запит блокується
+            const userUrl = `https://users.roblox.com/v1/users/${userId}`;
+            
+            fetch(userUrl)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.displayName) {
+                        // Виведемо "Нікнейм (@Username)"
+                        nameElement.textContent = `${data.displayName}`;
+                        // Можна також додати @username дрібним шрифтом за бажанням:
+                        // nameElement.innerHTML = `${data.displayName} <br><span style="font-size:10px; opacity:0.6;">@${data.name}</span>`;
+                    }
+                })
+                .catch(err => {
+                    nameElement.textContent = "Помилка API";
+                    console.error("Помилка Roblox API:", err);
+                });
+        }
+    });
+});
