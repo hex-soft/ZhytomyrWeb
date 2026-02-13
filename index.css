@@ -645,6 +645,20 @@ h2 i {
     border: 1px solid rgba(0,0,0,0.05);
 }
 
+#socials .social-grid {
+    display: flex; /* Змінюємо grid на flex для кращого центрування */
+    flex-wrap: wrap;
+    justify-content: center; /* Це вирівняє їх по центру */
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+#socials .social-card {
+    flex: 1 1 250px; /* Дозволяє карткам бути гнучкими */
+    max-width: 300px;
+}
+
 .dark-mode .social-card {
     background: #1e293b;
     border-color: rgba(255,255,255,0.05);
@@ -829,3 +843,4 @@ h2 i {
         text-align: center;
     }
 }
+
