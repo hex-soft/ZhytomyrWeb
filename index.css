@@ -429,10 +429,52 @@ h2 i {
     opacity: 0.8;
 }
 
+/* Виправлена секція команди */
 .dev-list-rect {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    display: flex; /* Змінюємо grid на flex для кращого центрування */
+    flex-wrap: wrap;
+    justify-content: center; 
     gap: 20px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.dev-rect {
+    background: var(--card-bg-light);
+    padding: 20px;
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid rgba(0,0,0,0.05);
+    width: 100%;
+    max-width: 380px; /* Обмежуємо ширину, щоб не розтягувались */
+    transition: var(--transition);
+}
+
+.dark-mode .dev-rect {
+    background: var(--card-bg-dark);
+    border-color: rgba(255,255,255,0.05);
+}
+
+/* Виправлена секція соцмереж */
+#socials .social-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 40px auto 0;
+}
+
+#socials .social-card {
+    flex: 0 1 280px;
+    min-width: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .dev-rect {
