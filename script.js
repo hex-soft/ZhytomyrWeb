@@ -123,30 +123,48 @@ document.querySelectorAll(".faction-link").forEach(btn => {
 
 document.addEventListener('DOMContentLoaded', () => {
     const devBlocks = document.querySelectorAll('[data-rbx-id]');
-    // Тепер використовуємо твій власний проксі на Netlify
-    const proxyUrl = "/api/roblox?url="; 
-
+    
     devBlocks.forEach(block => {
         const userId = block.getAttribute('data-rbx-id');
         const imgElement = block.querySelector('.rbx-avatar');
         const nameElement = block.querySelector('.rbx-name');
 
         if (userId && userId !== "YOUR_ID") {
-            // Завантаження аватарки
-            const rbxThumb = `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`;
-            fetch(`${proxyUrl}${encodeURIComponent(rbxThumb)}`)
+            // 1. Отримуємо аватарку (зазвичай працює без проксі)
+            const thumbUrl = `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`;
+            
+            fetch(thumbUrl)
                 .then(res => res.json())
                 .then(data => {
-                    if (data.data && data.data[0]) imgElement.src = data.data[0].imageUrl;
-                }).catch(() => { imgElement.src = "imgs/logo.png"; });
+                    if (data.data && data.data[0]) {
+                        imgElement.src = data.data[0].imageUrl;
+                    }
+                })
+                .catch(() => { imgElement.src = "imgs/logo.png"; });
 
-            // Завантаження імені
-            const rbxUser = `https://users.roblox.com/v1/users/${userId}`;
-            fetch(`${proxyUrl}${encodeURIComponent(rbxUser)}`)
-                .then(res => res.json())
+            // 2. Отримуємо нікнейм через проксі AllOrigins
+            const userUrl = `https://users.roblox.com/v1/users/${userId}`;
+            // AllOrigins дозволяє обійти CORS на GitHub Pages
+            const proxiedUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(userUrl)}`;
+
+            fetch(proxiedUrl)
+                .then(res => {
+                    if (res.ok) return res.json();
+                    throw new Error('Network response was not ok');
+                })
                 .then(data => {
-                    if (data.displayName) nameElement.textContent = data.displayName;
-                }).catch(() => { nameElement.textContent = "Помилка"; });
+                    // AllOrigins повертає дані у полі data.contents у вигляді рядка
+                    const userData = JSON.parse(data.contents);
+                    if (userData.displayName) {
+                        nameElement.textContent = userData.displayName;
+                    } else if (userData.name) {
+                        nameElement.textContent = userData.name;
+                    }
+                })
+                .catch(err => {
+                    nameElement.textContent = "Помилка API";
+                    console.error("Помилка завантаження даних Roblox:", err);
+                });
         }
     });
 });
