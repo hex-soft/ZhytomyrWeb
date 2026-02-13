@@ -646,17 +646,31 @@ h2 i {
 }
 
 #socials .social-grid {
-    display: flex; /* Змінюємо grid на flex для кращого центрування */
+    display: flex;
     flex-wrap: wrap;
-    justify-content: center; /* Це вирівняє їх по центру */
-    gap: 20px;
+    justify-content: center; /* Центрує картки по горизонталі */
+    align-items: center;
+    gap: 25px;
+    width: 100%;
     max-width: 1200px;
-    margin: 0 auto;
+    margin: 40px auto 0;
 }
 
 #socials .social-card {
-    flex: 1 1 250px; /* Дозволяє карткам бути гнучкими */
-    max-width: 300px;
+    flex: 0 1 280px; /* Забороняє карткам розтягуватися занадто сильно */
+    min-width: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Центрування заголовків секцій */
+.section h2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
 }
 
 .dark-mode .social-card {
@@ -843,4 +857,3 @@ h2 i {
         text-align: center;
     }
 }
-
