@@ -1,147 +1,165 @@
-/**
- * ЖИТОМИР RP - Оптимізований скрипт
- * Адаптовано для GitHub Pages
- */
+const themeToggle = document.getElementById("theme-toggle");
 
-const CONFIG = {
-    PROXY_BASE: "https://api.allorigins.win/get?url=",
-    THEME_KEY: "theme",
-    SCROLL_OFFSET: 80,
-    FALLBACK_IMAGE: "imgs/logo.png"
-};
+if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark-mode");
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-    initTheme();
-    initMobileMenu();
-    initSmoothScroll();
-    initAnimations();
-    initRobloxData();
+themeToggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark-mode");
+    localStorage.setItem(
+        "theme",
+        document.body.classList.contains("dark-mode") ? "dark" : "light"
+    );
 });
 
-/** 1. ТЕМНА ТЕМА (Логіка винесена в окрему функцію) */
-function initTheme() {
-    const themeToggle = document.getElementById("theme-toggle");
-    if (!themeToggle) return;
+document.querySelectorAll(".faction-link").forEach(el => {
+    el.addEventListener("click", () => {
+        document
+            .getElementById(el.dataset.target)
+            .scrollIntoView({ behavior: "smooth" });
+    });
+});
 
-    const applyTheme = (isDark) => {
-        document.body.classList.toggle("dark-mode", isDark);
-        localStorage.setItem(CONFIG.THEME_KEY, isDark ? "dark" : "light");
-    };
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+        if (e.isIntersecting) e.target.classList.add("show");
+    });
+}, { threshold: 0.15 });
 
-    // Початкова ініціалізація
-    if (localStorage.getItem(CONFIG.THEME_KEY) === "dark") {
-        applyTheme(true);
+document.querySelectorAll(".section").forEach(el => observer.observe(el));
+
+window.addEventListener("scroll", () => {
+    const hero = document.querySelector(".hero");
+    hero.style.backgroundPositionY = `${window.scrollY * 0.3}px`;
+});
+
+
+const burger = document.getElementById("burger");
+const mobileMenu = document.getElementById("mobileMenu");
+
+burger.addEventListener("click", () => {
+    mobileMenu.classList.toggle("show");
+});
+
+mobileMenu.querySelectorAll("a").forEach(link => {
+    link.addEventListener("click", () => {
+        mobileMenu.classList.remove("show");
+    });
+});
+
+const sections = document.querySelectorAll(".section");
+
+const sectionObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            sections.forEach(s => s.classList.remove("active"));
+            entry.target.classList.add("active");
+        }
+    });
+}, { threshold: 0.4 });
+
+sections.forEach(sec => sectionObserver.observe(sec));
+
+function smoothScrollTo(targetY, duration = 900) {
+    const startY = window.scrollY;
+    const distance = targetY - startY;
+    let startTime = null;
+
+    function easeInOutCubic(t) {
+        return t < 0.5
+            ? 4 * t * t * t
+            : 1 - Math.pow(-2 * t + 2, 3) / 2;
     }
 
-    themeToggle.addEventListener("click", () => {
-        const isDark = !document.body.classList.contains("dark-mode");
-        applyTheme(isDark);
-    });
+    function animation(currentTime) {
+        if (!startTime) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+        const progress = Math.min(timeElapsed / duration, 1);
+        const ease = easeInOutCubic(progress);
+
+        window.scrollTo(0, startY + distance * ease);
+
+        if (timeElapsed < duration) {
+            requestAnimationFrame(animation);
+        }
+    }
+
+    requestAnimationFrame(animation);
 }
 
-/** 2. МОБІЛЬНЕ МЕНЮ (Бургер) */
-function initMobileMenu() {
-    const burger = document.getElementById("burger");
-    const mobileMenu = document.getElementById("mobileMenu");
-    if (!burger || !mobileMenu) return;
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+    link.addEventListener("click", e => {
+        const targetId = link.getAttribute("href");
+        if (targetId.length > 1) {
+            e.preventDefault();
+            const target = document.querySelector(targetId);
+            if (!target) return;
 
-    const toggleMenu = () => mobileMenu.classList.toggle("show");
-    const closeMenu = () => mobileMenu.classList.remove("show");
+            const yOffset = -80;
+            const y = target.getBoundingClientRect().top + window.scrollY + yOffset;
 
-    burger.addEventListener("click", toggleMenu);
-    
-    // Закриття при кліку на посилання або поза меню
-    mobileMenu.addEventListener("click", (e) => {
-        if (e.target.tagName === 'A') closeMenu();
+            smoothScrollTo(y, 1000);
+        }
     });
-}
+});
 
-/** 3. ПЛАВНА ПРОКРУТКА (Уніфікована логіка) */
-function initSmoothScroll() {
-    const scrollToTarget = (targetSelector) => {
-        const target = document.querySelector(targetSelector);
+document.querySelectorAll(".faction-link").forEach(btn => {
+    btn.addEventListener("click", e => {
+        const targetId = btn.dataset.target;
+        const target = document.getElementById(targetId);
         if (!target) return;
 
-        const top = target.getBoundingClientRect().top + window.scrollY - CONFIG.SCROLL_OFFSET;
-        window.scrollTo({ top, behavior: "smooth" });
-    };
+        e.preventDefault(); 
 
-    // Використовуємо делегування або загальний цикл
-    document.addEventListener("click", (e) => {
-        // Обробка якірних посилань
-        const anchor = e.target.closest('a[href^="#"]');
-        if (anchor && anchor.getAttribute("href").length > 1) {
-            e.preventDefault();
-            scrollToTarget(anchor.getAttribute("href"));
-        }
+        const yOffset = -80;
+        const y = target.getBoundingClientRect().top + window.scrollY + yOffset;
 
-        // Обробка кнопок фракцій
-        const factionBtn = e.target.closest(".faction-link");
-        if (factionBtn && factionBtn.dataset.target) {
-            e.preventDefault();
-            scrollToTarget(`#${factionBtn.dataset.target}`);
-        }
-    });
-}
-
-/** 4. АНІМАЦІЇ (Intersection Observer + Parallax) */
-function initAnimations() {
-    // Поява секцій
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) entry.target.classList.add("show");
+        window.scrollTo({
+            top: y,
+            behavior: "smooth"
         });
-    }, { threshold: 0.15 });
+    });
+});
 
-    document.querySelectorAll(".section").forEach(sec => observer.observe(sec));
-
-    // Паралакс (Throttle не додаю для простоти, але можна через requestAnimationFrame)
-    const hero = document.querySelector(".hero");
-    if (hero) {
-        window.addEventListener("scroll", () => {
-            hero.style.backgroundPositionY = `${window.scrollY * 0.3}px`;
-        }, { passive: true });
-    }
-}
-
-/** 5. ROBLOX API (Використання async/await для читабельності) */
-async function fetchRobloxUser(userId) {
-    const userUrl = `https://users.roblox.com/v1/users/${userId}`;
-    try {
-        const response = await fetch(`${CONFIG.PROXY_BASE}${encodeURIComponent(userUrl)}`);
-        if (!response.ok) throw new Error();
-        const data = await response.json();
-        return JSON.parse(data.contents);
-    } catch (err) {
-        return null;
-    }
-}
-
-async function initRobloxData() {
+document.addEventListener('DOMContentLoaded', () => {
     const devBlocks = document.querySelectorAll('[data-rbx-id]');
-    
-    devBlocks.forEach(async (block) => {
-        const userId = block.dataset.rbxId;
-        if (!userId || userId === "YOUR_ID") return;
+    // Використовуємо публічний проксі для обходу CORS
+    const corsProxy = "https://corsproxy.io/?"; 
 
+    devBlocks.forEach(block => {
+        const userId = block.getAttribute('data-rbx-id');
         const imgElement = block.querySelector('.rbx-avatar');
         const nameElement = block.querySelector('.rbx-name');
 
-        // Аватарка (прямий запит)
-        const thumbUrl = `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`;
-        fetch(thumbUrl)
-            .then(res => res.json())
-            .then(data => {
-                if (data?.data?.[0]) imgElement.src = data.data[0].imageUrl;
-            })
-            .catch(() => imgElement.src = CONFIG.FALLBACK_IMAGE);
+        if (userId && userId !== "YOUR_ID") {
+            // 1. Завантаження аватарки (через проксі)
+            const thumbUrl = `${corsProxy}${encodeURIComponent(`https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`)}`;
+            
+            fetch(thumbUrl)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.data && data.data[0]) {
+                        imgElement.src = data.data[0].imageUrl;
+                    }
+                })
+                .catch(() => { imgElement.src = "imgs/logo.png"; });
 
-        // Ім'я (через проксі)
-        const userData = await fetchRobloxUser(userId);
-        if (userData) {
-            nameElement.textContent = userData.displayName || userData.name || "Unknown";
-        } else {
-            nameElement.textContent = "Помилка API";
+            // 2. Завантаження нікнейму (через проксі)
+            const userUrl = `${corsProxy}${encodeURIComponent(`https://users.roblox.com/v1/users/${userId}`)}`;
+            
+            fetch(userUrl)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.displayName) {
+                        nameElement.textContent = data.displayName;
+                    } else if (data.name) {
+                        nameElement.textContent = data.name;
+                    }
+                })
+                .catch(err => {
+                    nameElement.textContent = "Помилка завантаження";
+                    console.error("Roblox API Error:", err);
+                });
         }
     });
-}
+});
